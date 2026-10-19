@@ -33,14 +33,11 @@ export default ({ mode }) => {
     server: {
       host: '0.0.0.0',
       port: 8081,
-      server: {
-        proxy: {
-          // 代理路径
-          '/': {
-            target: env.VITE_APP_API_URL, // 目标服务器地址
-            changeOrigin: true, // 是否修改请求头中的 Origin 字段
-            rewrite: (path) => path, // 重写路径
-          },
+      proxy: {
+        '/api': {
+          target: env.VITE_APP_API_URL,
+          changeOrigin: true,
+          rewrite: (path: string): string => path.replace(/^\/api/, ''),
         },
       },
     },

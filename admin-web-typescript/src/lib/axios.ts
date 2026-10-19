@@ -7,10 +7,11 @@ import LocalStorageKeyConst from '/@/constants/local-storage-key-const';
 
 // token的消息头
 const TOKEN_HEADER = 'Authorization';
+const SUCCESS_CODE = 0;
 
 // 创建axios对象
 const axiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_APP_API_URL,
+  baseURL: import.meta.env.DEV ? '/api' : import.meta.env.VITE_APP_API_URL,
 });
 
 // 退出系统
@@ -55,7 +56,7 @@ axiosInstance.interceptors.response.use(
     }
 
     const res = response.data;
-    if (res.code && res.code !== 1) {
+    if (res.code !== SUCCESS_CODE) {
       // `token` 过期或者账号已在别处登录
       if (res.code === 30007 || res.code === 30008) {
         message.destroy();

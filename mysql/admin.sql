@@ -365,12 +365,15 @@ INSERT INTO t_menu (menu_id, menu_name, menu_type, parent_id, sort, path, compon
 (204, '查询', 3, 81, NULL, NULL, NULL, 1, 'support:operateLog:query', 'support:operateLog:query', NULL, NULL, 0, NULL, 0, 1, 0, 0, 1, CURRENT_TIMESTAMP, 1, CURRENT_TIMESTAMP),
 (205, '详情', 3, 81, NULL, NULL, NULL, 1, 'support:operateLog:detail', 'support:operateLog:detail', NULL, NULL, 0, NULL, 0, 1, 0, 0, 1, CURRENT_TIMESTAMP, 1, CURRENT_TIMESTAMP),
 (207, '更新', 3, 152, NULL, NULL, NULL, 1, 'support:changeLog:update', 'support:changeLog:update', NULL, NULL, 0, NULL, 0, 1, 0, 0, 1, CURRENT_TIMESTAMP, 1, CURRENT_TIMESTAMP),
-(213, '网络安全', 1, 0, 5, NULL, NULL, 1, NULL, NULL, 'SafetyCertificateOutlined', NULL, 0, NULL, 1, 1, 0, 0, 1, CURRENT_TIMESTAMP, 1, CURRENT_TIMESTAMP),
+(213, '网络安全', 1, 0, 5, '/security', NULL, 1, NULL, NULL, 'SafetyCertificateOutlined', NULL, 0, NULL, 1, 1, 0, 0, 1, CURRENT_TIMESTAMP, 1, CURRENT_TIMESTAMP),
 (214, '登录失败锁定', 2, 213, 4, '/support/login-fail', '/support/login-fail/login-fail-list.vue', 1, NULL, NULL, 'LockOutlined', NULL, 0, NULL, 1, 1, 0, 0, 1, CURRENT_TIMESTAMP, 1, CURRENT_TIMESTAMP),
-(218, '文档中心', 1, 0, 4, NULL, NULL, 1, NULL, NULL, 'FileSearchOutlined', NULL, 0, NULL, 1, 1, 0, 0, 1, CURRENT_TIMESTAMP, 1, CURRENT_TIMESTAMP),
+(218, '文档中心', 1, 0, 4, '/document', NULL, 1, NULL, NULL, 'FileSearchOutlined', NULL, 0, NULL, 1, 1, 0, 0, 1, CURRENT_TIMESTAMP, 1, CURRENT_TIMESTAMP),
 (219, '部门管理', 2, 45, 1, '/organization/department', '/system/department/department-list.vue', 1, NULL, NULL, 'ApartmentOutlined', NULL, 0, NULL, 0, 1, 0, 0, 1, CURRENT_TIMESTAMP, 1, CURRENT_TIMESTAMP),
 (234, 'swagger文档', 2, 218, 5, '/swagger', 'http://localhost:1024/swagger-ui/index.html', 1, NULL, NULL, 'ApiOutlined', NULL, 1, 'http://localhost:1024/swagger-ui/index.html', 1, 1, 0, 0, 1, CURRENT_TIMESTAMP, 1, CURRENT_TIMESTAMP),
-(250, '三级等保设置', 2, 213, 1, '/support/level3protect/level3-protect-config-index', '/support/level3protect/level3-protect-config-index.vue', 1, NULL, NULL, 'SafetyOutlined', NULL, 0, NULL, 1, 1, 0, 0, 1, CURRENT_TIMESTAMP, 1, CURRENT_TIMESTAMP);
+(250, '三级等保设置', 2, 213, 1, '/support/level3protect/level3-protect-config-index', '/support/level3protect/level3-protect-config-index.vue', 1, NULL, NULL, 'SafetyOutlined', NULL, 0, NULL, 1, 1, 0, 0, 1, CURRENT_TIMESTAMP, 1, CURRENT_TIMESTAMP),
+(251, '缓存管理', 2, 50, 2, '/support/cache', '/support/cache/cache-list.vue', NULL, NULL, NULL, 'DatabaseOutlined', NULL, 0, NULL, 0, 1, 0, 0, 1, CURRENT_TIMESTAMP, 1, CURRENT_TIMESTAMP),
+(252, '查询', 3, 251, 1, NULL, NULL, 1, 'support:cache:query', 'support:cache:query', NULL, 251, 0, NULL, 0, 1, 0, 0, 1, CURRENT_TIMESTAMP, 1, CURRENT_TIMESTAMP),
+(253, '清理', 3, 251, 2, NULL, NULL, 1, 'support:cache:clear', 'support:cache:clear', NULL, 251, 0, NULL, 0, 1, 0, 0, 1, CURRENT_TIMESTAMP, 1, CURRENT_TIMESTAMP);
 
 INSERT INTO t_role (role_id, role_name, role_code, remark)
 VALUES (1, '管理员', 'admin', '系统管理员');

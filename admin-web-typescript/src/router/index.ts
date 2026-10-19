@@ -4,7 +4,6 @@ import { nextTick } from 'vue';
 import { createRouter, createWebHashHistory } from 'vue-router';
 import { routerArray } from './routers';
 import { PAGE_PATH_404, PAGE_PATH_LOGIN, HOME_PAGE_PATH } from '/@/constants/common-const';
-import { HOME_PAGE_NAME } from '/@/constants/system/home-const';
 import Layout from '../layout/index.vue';
 import { useUserStore } from '/@/store/modules/system/user';
 import { localClear, localRead } from '/@/utils/local-util';
@@ -48,7 +47,7 @@ router.beforeEach(async (to, from, next) => {
   }
 
   // 首页（ 需要登录 ，但不需要验证权限）
-  if (to.path === HOME_PAGE_NAME) {
+  if (to.path === HOME_PAGE_PATH) {
     next();
     return;
   }
