@@ -4,6 +4,7 @@ import net.admin.base.listener.Ip2RegionListener;
 import net.admin.base.listener.LogVariableListener;
 import org.apache.ibatis.annotations.Mapper;
 import org.mybatis.spring.annotation.MapperScan;
+import org.springframework.boot.Banner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration;
@@ -22,6 +23,7 @@ public class AdminApplication {
 
     public static void main(String[] args) {
         SpringApplication application = new SpringApplication(AdminApplication.class);
+        application.setBannerMode(Banner.Mode.OFF);
         // 添加 日志监听器，使 log4j2-spring.xml 可以间接读取到配置文件的属性
         application.addListeners(new LogVariableListener(), new Ip2RegionListener());
         application.run(args);

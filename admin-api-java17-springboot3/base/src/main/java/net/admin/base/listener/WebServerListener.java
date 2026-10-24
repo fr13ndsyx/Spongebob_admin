@@ -6,12 +6,18 @@ import lombok.extern.slf4j.Slf4j;
 import net.admin.base.common.code.ErrorCodeRegister;
 import net.admin.base.common.enumeration.SystemEnvironmentEnum;
 import net.admin.base.common.util.EnumUtil;
+import org.springframework.boot.ResourceBanner;
 import org.springframework.boot.web.context.WebServerApplicationContext;
 import org.springframework.boot.web.context.WebServerInitializedEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.env.Environment;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
+
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
 
 @Slf4j
 @Component
@@ -51,14 +57,18 @@ public class WebServerListener implements ApplicationListener<WebServerInitializ
         String localhostUrl = URLUtil.normalize(String.format("http://localhost:%d%s", port, contextPath), false, true);
         String externalUrl = URLUtil.normalize(String.format("http://%s:%d%s", ip, port, contextPath), false, true);
         String swaggerUrl = URLUtil.normalize(String.format("http://localhost:%d%s/swagger-ui/index.html", port, contextPath), false, true);
-        log.warn("\n{}\n" +
+        ByteArrayOutputStream bannerOutput = new ByteArrayOutputStream();
+        try (PrintStream bannerStream = new PrintStream(bannerOutput, false, StandardCharsets.UTF_8)) {
+            new ResourceBanner(new ClassPathResource("banner.txt")).printBanner(env, getClass(), bannerStream);
+        }
+        log.warn("\n{}{}\n" +
                         "\t当前启动环境:\t{} , {}" +
                         "\n\t返回码初始化:\t完成{}个返回码初始化" +
                         "\n\t服务本机地址:\t{}" +
                         "\n\t服务外网地址:\t{}" +
                         "\n\tSwagger地址:\t{}" +
                         "\n-------------------------------------------------------------------------------------\n",
-                title, profile, environmentEnum.getDesc(), codeCount, localhostUrl, externalUrl, swaggerUrl);
+                bannerOutput.toString(StandardCharsets.UTF_8), title, profile, environmentEnum.getDesc(), codeCount, localhostUrl, externalUrl, swaggerUrl);
     }
 
 }
