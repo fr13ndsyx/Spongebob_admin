@@ -313,10 +313,10 @@ INSERT INTO t_config (config_id, config_name, config_key, config_value, remark)
 VALUES (1, '三级等保', 'level3_protect_config', '{"fileDetectFlag":true,"loginActiveTimeoutMinutes":30,"loginFailLockMinutes":30,"loginFailMaxTimes":3,"maxUploadFileSizeMb":30,"passwordComplexityEnabled":true,"regularChangePasswordMonths":3,"regularChangePasswordNotAllowRepeatTimes":3,"twoFactorLoginEnabled":false}', '默认安全配置');
 
 INSERT INTO t_department (department_id, department_name, manager_id, parent_id, sort)
-VALUES (1, '默认部门', 1, 0, 1);
+VALUES (1, '比奇堡', 1, 0, 1);
 
 INSERT INTO t_employee (employee_id, employee_uid, login_name, login_pwd, actual_name, avatar, gender, phone, department_id, email, disabled_flag, deleted_flag, administrator_flag, remark)
-VALUES (1, 'cf1e361fd46741f5b2a09335cef50db8', 'admin', '$argon2id$v=19$m=16384,t=2,p=1$d9yQEAhck+haKxP2ZtXocg$NEnw3D2Ly8UbYpy2odATLA4ZflZ1FKJjWCuOGrVE4PM', '管理员', NULL, 0, NULL, 1, NULL, 0, 0, 1, NULL);
+VALUES (1, 'cf1e361fd46741f5b2a09335cef50db8', 'admin', '$argon2id$v=19$m=16384,t=2,p=1$d9yQEAhck+haKxP2ZtXocg$NEnw3D2Ly8UbYpy2odATLA4ZflZ1FKJjWCuOGrVE4PM', '海绵宝宝', NULL, 0, NULL, 1, NULL, 0, 0, 1, NULL);
 
 INSERT INTO t_mail_template (template_code, template_subject, template_content, template_type, disable_flag)
 VALUES ('login_verification_code', '登录验证码', '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>登录验证码</title></head><body><h1>登录验证码</h1><p>请在验证页面输入此验证码：</p><p><b>${code}</b></p><p>验证码将在5分钟后过期。</p><p>如果你未曾提出此请求，可以忽略这封邮件。</p></body></html>', 'freemarker', 0);
