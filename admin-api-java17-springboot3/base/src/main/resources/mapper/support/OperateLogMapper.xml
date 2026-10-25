@@ -14,19 +14,19 @@
                 AND operate_user_type = #{query.operateUserType}
             </if>
             <if test="query.startDate != null and query.startDate != ''">
-                AND DATE_FORMAT(create_time, '%Y-%m-%d') &gt;= #{query.startDate}
+                AND create_time &gt;= CAST(#{query.startDate} AS date)
             </if>
             <if test="query.endDate != null and query.endDate != ''">
-                AND DATE_FORMAT(create_time, '%Y-%m-%d') &lt;= #{query.endDate}
+                AND create_time &lt; CAST(#{query.endDate} AS date) + INTERVAL '1 day'
             </if>
             <if test="query.userName != null and query.userName != ''">
-                AND INSTR(operate_user_name,#{query.userName})
+                AND operate_user_name LIKE '%' || replace(replace(replace(#{query.userName}, '\', '\\'), '%', '\%'), '_', '\_') || '%'
             </if>
             <if test="query.keywords != null and query.keywords != ''">
-                AND (INSTR(module,#{query.keywords}) OR INSTR(content,#{query.keywords}))
+                AND (module LIKE '%' || replace(replace(replace(#{query.keywords}, '\', '\\'), '%', '\%'), '_', '\_') || '%' OR content LIKE '%' || replace(replace(replace(#{query.keywords}, '\', '\\'), '%', '\%'), '_', '\_') || '%')
             </if>
             <if test="query.requestKeywords != null and query.requestKeywords != ''">
-                AND (INSTR(url,#{query.requestKeywords}) OR INSTR(method,#{query.requestKeywords}) OR INSTR(param,#{query.requestKeywords}) OR INSTR(response,#{query.requestKeywords}))
+                AND (url LIKE '%' || replace(replace(replace(#{query.requestKeywords}, '\', '\\'), '%', '\%'), '_', '\_') || '%' OR method LIKE '%' || replace(replace(replace(#{query.requestKeywords}, '\', '\\'), '%', '\%'), '_', '\_') || '%' OR param LIKE '%' || replace(replace(replace(#{query.requestKeywords}, '\', '\\'), '%', '\%'), '_', '\_') || '%' OR response LIKE '%' || replace(replace(replace(#{query.requestKeywords}, '\', '\\'), '%', '\%'), '_', '\_') || '%')
             </if>
             <if test="query.successFlag != null">
                 AND success_flag = #{query.successFlag}

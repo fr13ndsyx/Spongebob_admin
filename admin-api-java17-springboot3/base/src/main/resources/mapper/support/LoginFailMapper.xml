@@ -5,12 +5,13 @@
     <!-- 分页查询 -->
     <select id="queryPage" resultType="net.admin.base.module.support.securityprotect.domain.LoginFailVO">
         SELECT
-        *
+        login_fail_id, user_id, user_type, login_name, login_fail_count,
+        CAST(lock_flag AS integer) AS lock_flag, login_lock_begin_time, create_time, update_time
         FROM t_login_fail
         <where>
             <!--登录名-->
             <if test="queryForm.loginName != null and queryForm.loginName != ''">
-                AND INSTR(t_login_fail.login_name,#{queryForm.loginName})
+                AND t_login_fail.login_name LIKE '%' || replace(replace(replace(#{queryForm.loginName}, '\', '\\'), '%', '\%'), '_', '\_') || '%'
             </if>
             <!--锁定状态-->
             <if test="queryForm.lockFlag != null ">
@@ -18,10 +19,10 @@
             </if>
             <!--登录失败锁定时间-->
             <if test="queryForm.loginLockBeginTimeBegin != null">
-                AND DATE_FORMAT(t_login_fail.login_lock_begin_time, '%Y-%m-%d') &gt;= #{queryForm.loginLockBeginTimeBegin}
+                AND t_login_fail.login_lock_begin_time &gt;= CAST(#{queryForm.loginLockBeginTimeBegin} AS date)
             </if>
             <if test="queryForm.loginLockBeginTimeEnd != null">
-                AND DATE_FORMAT(t_login_fail.login_lock_begin_time, '%Y-%m-%d') &lt;= #{queryForm.loginLockBeginTimeEnd}
+                AND t_login_fail.login_lock_begin_time &lt; CAST(#{queryForm.loginLockBeginTimeEnd} AS date) + INTERVAL '1 day'
             </if>
         </where>
         order by t_login_fail.update_time desc

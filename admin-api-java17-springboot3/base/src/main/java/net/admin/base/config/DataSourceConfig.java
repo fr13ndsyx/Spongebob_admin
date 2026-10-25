@@ -69,7 +69,7 @@ public class DataSourceConfig {
     @Primary
     public DataSource druidDataSource() {
         DruidDataSource druidDataSource = new DruidDataSource();
-        druidDataSource.setDbType(DbType.MYSQL.getDb());
+        druidDataSource.setDbType(DbType.POSTGRE_SQL.getDb());
         druidDataSource.setDriverClassName(driver);
         druidDataSource.setUrl(url);
         druidDataSource.setUsername(username);

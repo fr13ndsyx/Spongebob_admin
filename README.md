@@ -28,7 +28,7 @@
 | 前端工具 | Node.js >= 18，建议使用仍受维护的 LTS 版本；npm |
 | 后端 | Java 17、Spring Boot 3.5.4、MyBatis-Plus 3.5.12、Sa-Token 1.44.0 |
 | 后端工具 | JDK 17 或兼容版本，建议 Maven 3.9.x；可使用 IntelliJ IDEA |
-| 数据库 | MySQL 8.x |
+| 数据库 | PostgreSQL 18，需包含 ICU 排序规则支持 |
 | 缓存和会话 | Redis；建议使用独立实例或独立逻辑数据库 |
 
 首次安装需要访问 npm 和 Maven 仓库。前端按 `package-lock.json` 安装依赖，后端按父工程 `pom.xml` 管理依赖。
@@ -43,7 +43,7 @@
 | --- | --- | --- |
 | 前端 | `admin-web-typescript/` | `web/` |
 | 后端父工程 | `admin-api-java17-springboot3/` | `api/` |
-| 初始化 SQL | `mysql/admin.sql` | `api/mysql/admin.sql` |
+| 初始化 SQL | `sql/postgresql.sql` | `sql/postgresql.sql`（与 `api/` 同级） |
 
 解压两个包后，主要结构为：
 
@@ -66,8 +66,10 @@ api/
 │   ├── src/main/java/
 │   ├── src/main/resources/
 │   └── pom.xml
-├── mysql/admin.sql
 └── pom.xml
+
+sql/
+└── postgresql.sql
 ```
 
 `admin` 是启动模块，`base` 是它依赖的公共模块。打开后端时导入父工程 `api/pom.xml`。
@@ -76,30 +78,30 @@ api/
 
 ## 4. 初始化数据库
 
-1. 启动 MySQL，使用数据库管理工具新建一个空数据库，建议名称为 `admin`。
-2. 字符集选择 `utf8mb4`，排序规则选择 `utf8mb4_general_ci`。
-3. 选中这个新库，执行 `api/mysql/admin.sql`；原源码使用 `mysql/admin.sql`。
-4. 核对导入结果，再配置后端连接这个数据库。
+1. 启动 PostgreSQL 18，使用数据库管理工具新建 UTF-8 编码的空数据库，建议名称为 `admin`。
+2. 选中这个新库，执行 `sql/postgresql.sql`；压缩包路径为 `sql/postgresql.sql`（与 `api/` 同级）。
+3. 核对导入结果，再配置后端连接这个数据库。应用启动不会自动执行该脚本。转交项目时需同时携带根目录的 `sql/postgresql.sql`；Maven 仅将它作为测试资源加载。
 
 创建数据库也可以使用：
 
 ```sql
-CREATE DATABASE admin CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+CREATE DATABASE admin ENCODING 'UTF8';
+ALTER DATABASE admin SET timezone TO 'Asia/Shanghai';
 ```
 
-初始化 SQL 在当前选中的数据库执行，不固定数据库名称，不包含删除已有库表的语句。它用于全新安装，不是旧数据库的升级脚本，不要在已有业务数据的库上重复导入。
+脚本在当前选中的数据库执行，使用事务创建全部表和初始数据，不删除已有库表。它用于全新安装，不是旧库升级脚本；执行失败应回滚事务，不要在已有数据的库上重复导入。`sql/admin.sql` 只保留为原 MySQL 脚本，当前后端使用 PostgreSQL。
 
 初始化结果：
 
 - 22 张表。
 - 1 个管理员账号、1 个默认部门、1 个管理员角色及员工角色关联。
-- 49 项菜单和功能点，以及对应的 49 条管理员菜单授权。
+- 52 项菜单和功能点，以及对应的 52 条管理员菜单授权。
 - 1 项必要安全配置、1 份登录验证码邮件模板。
 - 其余 14 张表为空，登录和操作后会正常产生新的日志。
 
-登录账号为 `admin` 初始密码：`123456`。
+登录账号为 `admin`，初始密码为 `123456`。管理员 UID 与密码摘要是配对数据，不能只修改其中一个字段来重置密码。
 
-管理员 UID 与密码摘要是配对数据，不能只修改其中一个字段来重置密码。
+状态字段使用 PostgreSQL `boolean`，自增主键使用 `IDENTITY` 并在初始化后校准序列。原有自动更新时间通过触发器保留；时间列沿用与 Java `LocalDateTime` 对应的 `timestamp(0)`。字符串使用 ICU `admin_ci` 排序规则，保留大小写、重音不敏感比较；搜索使用 PostgreSQL 18 对该排序规则的 `LIKE` 支持，并将 `%`、`_` 和反斜杠按普通搜索字符处理。
 
 ## 5. 配置并启动后端
 
@@ -112,24 +114,24 @@ CREATE DATABASE admin CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 - `api/admin/src/main/resources/dev/application.yaml`：应用端口、环境、日志目录。
 - `api/base/src/main/resources/dev/base.yaml`：数据库、Redis、邮件、文件存储和安全支撑配置。
 
-原源码中的本机 `dev/test` 配置与压缩包的公共模板不同，不直接转交本机私有配置。使用原源码的公共配置时，可选择已有的 `pre` Maven profile。
+四套后端配置均通过环境变量连接 PostgreSQL 和 Redis，不在源码中填写本机密码。
 
 | 环境变量 | 默认值 | 用途 |
 | --- | --- | --- |
-| `MYSQL_HOST` | `127.0.0.1` | MySQL 地址 |
-| `MYSQL_PORT` | `3306` | MySQL 端口 |
-| `MYSQL_DATABASE` | `admin` | 导入 SQL 的数据库名称 |
-| `MYSQL_USER` | `root` | MySQL 账号 |
-| `MYSQL_PASSWORD` | 无，必须设置 | MySQL 密码，与 admin 登录密码是两回事 |
+| `POSTGRES_HOST` | `127.0.0.1` | PostgreSQL 地址 |
+| `POSTGRES_PORT` | `5432` | PostgreSQL 端口 |
+| `POSTGRES_DATABASE` | `admin` | 导入 SQL 的数据库名称 |
+| `POSTGRES_USER` | `postgres` | PostgreSQL 账号 |
+| `POSTGRES_PASSWORD` | 无，必须设置 | PostgreSQL 密码，与 admin 登录密码是两回事 |
 | `REDIS_HOST` | `127.0.0.1` | Redis 地址 |
 | `REDIS_PORT` | `6379` | Redis 端口 |
-| `REDIS_DATABASE` | `1` | Redis 逻辑数据库，需与其他项目隔离 |
+| `REDIS_DATABASE` | `2` | Redis 逻辑数据库，与旧 MySQL 版本使用的 1 隔离 |
 | `REDIS_PASSWORD` | 空 | Redis 有密码时设置 |
 | `API_ENCRYPT_PRIVATE_KEY` | 无，必须设置 | 登录与改密传输加密用的 SM2 私钥，64 位十六进制；只放后端，不要提交进 git |
 
 `API_ENCRYPT_PRIVATE_KEY` 的生成方式：双击 `api/tools/generate-sm2-private-key.bat`（原源码为 `admin-api-java17-springboot3/tools/`），把窗口中输出的私钥填入该环境变量。每个环境各生成一把，不要共用；前端不需要任何配置，登录时会向后端获取对应的公钥。更换私钥后重启后端即可，已打开的登录页刷新一次。
 
-在 IDEA 的 `AdminApplication` 运行配置中设置这些环境变量，并让该进程能连接 MySQL 和 Redis。使用终端启动时，环境变量必须在该终端进程中生效。
+在 IDEA 的 `AdminApplication` 运行配置中设置这些环境变量，并让该进程能连接 PostgreSQL 和 Redis。使用终端启动时，环境变量必须在该终端进程中生效。
 
 ### 5.2 IDEA 启动
 
@@ -196,10 +198,10 @@ VITE_APP_API_URL='http://127.0.0.1:1024'
 
 ## 7. 首次运行检查
 
-1. 确认 MySQL、Redis 和后端已启动，再启动前端。
+1. 确认 PostgreSQL、Redis 和后端已启动，再启动前端。
 2. 使用 `admin` 和交付方提供的密码登录。
 3. 首页应显示语录、天气区域、帮助文档和更新日志卡片；初始化后文档和更新日志显示空状态是正常的。
-4. 员工、部门和角色列表应各有一条基础数据；菜单管理应有 49 项菜单和功能点。
+4. 员工、部门和角色列表应各有一条基础数据；菜单管理应有 52 项菜单和功能点。
 5. 标签页右键应能关闭其他或关闭所有；天气区域点击不跳转。
 6. 再次登录和进行管理操作后，可到登录日志、操作日志页面检查新记录。
 7. 新增业务和普通角色后，分别核对页面、按钮与后端接口权限；前端按钮隐藏不能代替后端鉴权。
@@ -208,29 +210,30 @@ VITE_APP_API_URL='http://127.0.0.1:1024'
 
 | 现象 | 检查方向 |
 | --- | --- |
-| 启动提示无法解析 `MYSQL_PASSWORD` | 检查运行进程是否设置此环境变量；不能只在另一个终端里设置 |
+| 启动提示无法解析 `POSTGRES_PASSWORD` | 在 IDEA 的运行 → 编辑配置 → AdminApplication → 环境变量中设置；从 Windows 用户环境变量读取时需完全重启 IDEA |
+| `ClassNotFoundException: org.postgresql.Driver` | 在 IDEA 的 Maven 面板重新加载全部 Maven 项目；确认后端父 `pom.xml` 已作为 Maven 工程导入、运行配置使用 `admin` 模块，外部库中存在 `org.postgresql:postgresql` 后再启动 |
 | 启动提示无法解析 `API_ENCRYPT_PRIVATE_KEY` 或「不是有效的 SM2 私钥」 | 按 5.1 节用生成工具重新生成私钥，并确认运行进程设置了该环境变量 |
-| 数据库连接失败或找不到表 | 检查 MySQL 连接参数、数据库名及 SQL 是否导入到同一个库 |
+| 数据库连接失败或找不到表 | 检查 PostgreSQL 连接参数、数据库名及 SQL 是否导入到同一个库 |
 | Redis 连接失败 | 检查地址、端口、密码和逻辑数据库配置 |
 | 前端打不开或接口请求失败 | 查看 Vite 实际端口，核对 `.env.localhost` 中的接口地址和后端是否启动 |
-| 登录提示密码错误 | 确认取得交付方当前密码，初始化 SQL 没有设置其他统一默认密码 |
+| 登录提示密码错误 | 全新初始化库使用本节说明的初始账号密码；修改密码后使用新密码 |
 | 新库出现旧部门或旧会话 | 检查是否复用了其他项目的 Redis 数据库，改用独立实例或数据库 |
 | 首页文档、更新日志为空 | 初始化不带历史内容，可到文档中心创建 |
 | 天气没有加载 | 检查第三方天气服务及网络连接；其他后台功能不依赖天气服务 |
 
 ## 9. 验证范围
 
-已完成初始化 SQL 的 MySQL 导入核对、表结构与基础数据检查、管理员密码摘要配对和权限关联检查，以及两个源码压缩包的逐项完整性核验。
+PostgreSQL 迁移检查位于 `admin-api-java17-springboot3/admin/src/test/java/net/admin/admin/PostgresDatabaseTest.java`，在真实 PostgreSQL 的独立临时 schema 中验证初始化、基础数据、自增主键、大小写与特殊字符搜索、分页、状态字段、日期筛选、菜单更新和自动更新时间，结束后回滚；不会修改已有业务表。
 
-本次文档编写没有重新构建或启动整套项目。接收者需要按第 7 节在自己的环境完成运行检查；邮件投递、云存储和公网部署需要按实际配置验证。
+在后端父工程目录设置 `POSTGRES_TEST_URL=jdbc:postgresql://127.0.0.1:5432/postgres`、`POSTGRES_USER` 和 `POSTGRES_PASSWORD` 后执行 `mvn -Pdev test`，即可连库运行该检查；未设置测试 URL 时只跳过这项连库检查。测试账号需有创建 schema 的权限。后端重新编译并重启由使用者执行，按第 7 节继续核对页面与接口；邮件投递、云存储和公网部署需按实际配置验证。
 
 现有源码仍有尚未整理的严格 TypeScript 类型检查问题。`build:*` 使用 Vite 构建，不等于全仓类型检查已经通过。
 
 ## IP 地区数据
 
-后端公共模块的 `base/src/main/resources/ip2region.xdb` 是离线 IP 地区查询数据，由启动监听器加载到内存，供登录和操作日志记录地区使用。它不是 MySQL 初始化脚本，项目改名不修改该文件。
+后端公共模块的 `base/src/main/resources/ip2region.xdb` 是离线 IP 地区查询数据，由启动监听器加载到内存，供登录和操作日志记录地区使用。它不是数据库初始化脚本，项目改名不修改该文件。
 
-当前源码采用 `net.admin` 包名前缀，Maven 模块为 `admin` 和 `base`；公共配置文件为 `base.yaml`，默认数据库名为 `admin`。已有数据库名称不变时，可通过 `MYSQL_DATABASE` 指定原名称。
+当前源码采用 `net.admin` 包名前缀，Maven 模块为 `admin` 和 `base`；公共配置文件为 `base.yaml`，默认数据库名为 `admin`。使用其他 PostgreSQL 数据库名时，通过 `POSTGRES_DATABASE` 指定。切换新库时使用独立 Redis 逻辑数据库；本配置默认使用 2，旧版本的 1 不会被清理，浏览器需要重新登录。
 
 可运行的源码检查位于 `admin-web-typescript/tests/`，安装前端依赖后在前端目录执行 `node tests/test_project_identity.cjs`（其余检查脚本同理），覆盖 Java 包路径、Mapper 引用、配置加载、品牌与旧缓存、首页、头像、登录动画和传输加密。
 
@@ -266,6 +269,6 @@ SmartAdmin 采用 MIT License 发布，允许免费任意商用。本项目沿�
 
 “系统设置 → 缓存管理”支持按项清理和清理全部已登记业务缓存，当前包含字典数据与部门列表、树、下级 ID、路径。后端只接受明确登记的缓存名称，保留登录会话、用户身份与权限缓存、验证码、安全限制及其他 Redis 数据；不会清除浏览器的登录令牌。清理后请刷新相关页面。
 
-已有数据库执行 `mysql/cache-menu.sql` 增加菜单和查询、清理权限，脚本可重复执行，只给 `admin` 角色补充授权；其他角色在角色管理中按需授权。不要为增加菜单重新导入会重建表的 `mysql/admin.sql`。新库初始化已包含菜单。更新代码后重新编译、重启后端，再刷新前端；普通账号新增授权后需要重新登录以更新现有权限缓存。
+PostgreSQL 新库初始化已包含缓存管理菜单和管理员授权，其他角色在角色管理中按需授权。不要为增加菜单重新导入初始化脚本。更新代码后重新编译、重启后端，再刷新前端；普通账号新增授权后需要重新登录以更新现有权限缓存。
 
 新模块复用 Spring Cache，并在 `admin-api-java17-springboot3/admin/src/main/java/net/admin/admin/module/system/cache/CacheService.java` 的 `CLEARABLE_CACHES` 中登记缓存常量和显示名称，即可纳入管理。只有可从原始数据重新生成的业务缓存才能登记，禁止登记会话、权限和安全状态。未登记的缓存默认不能清理。

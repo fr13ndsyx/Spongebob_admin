@@ -14,16 +14,16 @@
                 AND user_type = #{query.userType}
             </if>
             <if test="query.ip != null and query.ip != ''">
-                AND INSTR(login_ip,#{query.ip})
+                AND login_ip LIKE '%' || replace(replace(replace(#{query.ip}, '\', '\\'), '%', '\%'), '_', '\_') || '%'
             </if>
             <if test="query.startDate != null and query.startDate != ''">
-                AND DATE_FORMAT(create_time, '%Y-%m-%d') &gt;= #{query.startDate}
+                AND create_time &gt;= CAST(#{query.startDate} AS date)
             </if>
             <if test="query.endDate != null and query.endDate != ''">
-                AND DATE_FORMAT(create_time, '%Y-%m-%d') &lt;= #{query.endDate}
+                AND create_time &lt; CAST(#{query.endDate} AS date) + INTERVAL '1 day'
             </if>
             <if test="query.userName != null and query.userName != ''">
-                AND INSTR(user_name,#{query.userName})
+                AND user_name LIKE '%' || replace(replace(replace(#{query.userName}, '\', '\\'), '%', '\%'), '_', '\_') || '%'
             </if>
         </where>
         order by create_time desc

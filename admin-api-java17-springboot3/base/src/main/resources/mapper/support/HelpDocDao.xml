@@ -22,17 +22,15 @@
                 AND t_help_doc.help_doc_catalog_id = #{query.helpDocCatalogId}
             </if>
             <if test="query.keywords != null and query.keywords !=''">
-                AND ( INSTR(t_help_doc.title,#{query.keywords})
-                OR INSTR(t_help_doc.author,#{query.keywords})
+                AND ( t_help_doc.title LIKE '%' || replace(replace(replace(#{query.keywords}, '\', '\\'), '%', '\%'), '_', '\_') || '%'
+                OR t_help_doc.author LIKE '%' || replace(replace(replace(#{query.keywords}, '\', '\\'), '%', '\%'), '_', '\_') || '%'
                 )
             </if>
             <if test="query.createTimeBegin != null">
-                AND DATE_FORMAT(t_help_doc.create_time, '%Y-%m-%d') &gt;= DATE_FORMAT(#{query.createTimeBegin},
-                '%Y-%m-%d')
+                AND t_help_doc.create_time &gt;= CAST(#{query.createTimeBegin} AS date)
             </if>
             <if test="query.createTimeEnd != null">
-                AND DATE_FORMAT(t_help_doc.create_time, '%Y-%m-%d') &lt;= DATE_FORMAT(#{query.createTimeEnd},
-                '%Y-%m-%d')
+                AND t_help_doc.create_time &lt; CAST(#{query.createTimeEnd} AS date) + INTERVAL '1 day'
             </if>
         </where>
         <if test="query.sortItemList == null or query.sortItemList.size == 0">
@@ -113,11 +111,11 @@
         help_doc_id = #{queryForm.helpDocId}
         <if test="queryForm.keywords != null and queryForm.keywords !=''">
             AND (
-            INSTR(user_name,#{queryForm.keywords})
-            OR INSTR(first_ip,#{queryForm.keywords})
-            OR INSTR(first_user_agent,#{queryForm.keywords})
-            OR INSTR(last_ip,#{queryForm.keywords})
-            OR INSTR(last_user_agent,#{queryForm.keywords})
+            user_name LIKE '%' || replace(replace(replace(#{queryForm.keywords}, '\', '\\'), '%', '\%'), '_', '\_') || '%'
+            OR first_ip LIKE '%' || replace(replace(replace(#{queryForm.keywords}, '\', '\\'), '%', '\%'), '_', '\_') || '%'
+            OR first_user_agent LIKE '%' || replace(replace(replace(#{queryForm.keywords}, '\', '\\'), '%', '\%'), '_', '\_') || '%'
+            OR last_ip LIKE '%' || replace(replace(replace(#{queryForm.keywords}, '\', '\\'), '%', '\%'), '_', '\_') || '%'
+            OR last_user_agent LIKE '%' || replace(replace(replace(#{queryForm.keywords}, '\', '\\'), '%', '\%'), '_', '\_') || '%'
             )
         </if>
         <if test="queryForm.userId != null ">

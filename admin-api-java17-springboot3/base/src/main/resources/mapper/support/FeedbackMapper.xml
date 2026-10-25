@@ -8,15 +8,15 @@
         <where>
             <if test="query.searchWord != null and query.searchWord != '' ">
                 AND (
-                INSTR(feedback_content,#{query.searchWord})
-                OR INSTR(user_name,#{query.searchWord})
+                feedback_content LIKE '%' || replace(replace(replace(#{query.searchWord}, '\', '\\'), '%', '\%'), '_', '\_') || '%'
+                OR user_name LIKE '%' || replace(replace(replace(#{query.searchWord}, '\', '\\'), '%', '\%'), '_', '\_') || '%'
                 )
             </if>
             <if test="query.startDate != null">
-                AND DATE_FORMAT(create_time, '%Y-%m-%d') &gt;= #{query.startDate}
+                AND create_time &gt;= CAST(#{query.startDate} AS date)
             </if>
             <if test="query.endDate != null">
-                AND DATE_FORMAT(create_time, '%Y-%m-%d') &lt;= #{query.endDate}
+                AND create_time &lt; CAST(#{query.endDate} AS date) + INTERVAL '1 day'
             </if>
         </where>
         <if test="query.sortItemList == null or query.sortItemList.size == 0">

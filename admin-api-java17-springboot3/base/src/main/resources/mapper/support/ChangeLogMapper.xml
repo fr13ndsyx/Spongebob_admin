@@ -14,21 +14,21 @@
             </if>
             <!--关键字-->
             <if test="queryForm.keyword != null and queryForm.keyword != ''">
-                AND ( INSTR(t_change_log.update_version,#{queryForm.keyword})
-                OR INSTR(t_change_log.publish_author,#{queryForm.keyword})
-                OR INSTR(t_change_log.content,#{queryForm.keyword})
+                AND ( t_change_log.update_version LIKE '%' || replace(replace(replace(#{queryForm.keyword}, '\', '\\'), '%', '\%'), '_', '\_') || '%'
+                OR t_change_log.publish_author LIKE '%' || replace(replace(replace(#{queryForm.keyword}, '\', '\\'), '%', '\%'), '_', '\_') || '%'
+                OR t_change_log.content LIKE '%' || replace(replace(replace(#{queryForm.keyword}, '\', '\\'), '%', '\%'), '_', '\_') || '%'
                 )
             </if>
             <!--发布日期-->
             <if test="queryForm.publicDateBegin != null">
-                AND DATE_FORMAT(t_change_log.public_date, '%Y-%m-%d') &gt;= #{queryForm.publicDateBegin}
+                AND t_change_log.public_date &gt;= CAST(#{queryForm.publicDateBegin} AS date)
             </if>
             <if test="queryForm.publicDateEnd != null">
-                AND DATE_FORMAT(t_change_log.public_date, '%Y-%m-%d') &lt;= #{queryForm.publicDateEnd}
+                AND t_change_log.public_date &lt; CAST(#{queryForm.publicDateEnd} AS date) + INTERVAL '1 day'
             </if>
             <!--创建时间-->
             <if test="queryForm.createTime != null">
-                AND DATE_FORMAT(t_change_log.create_time, '%Y-%m-%d') = #{queryForm.createTime}
+                AND t_change_log.create_time &gt;= CAST(#{queryForm.createTime} AS date) AND t_change_log.create_time &lt; CAST(#{queryForm.createTime} AS date) + INTERVAL '1 day'
             </if>
             <!--跳转链接-->
             <if test="queryForm.link != null">

@@ -77,7 +77,7 @@ assert.ok(factories.includes('net.admin.base.config.YamlProcessor'));
 for (const environment of ['dev', 'test', 'pre', 'prod']) {
   const baseConfig = fs.readFileSync(path.join(api, 'base/src/main/resources', environment, 'base.yaml'), 'utf8');
   const applicationConfig = fs.readFileSync(path.join(api, 'admin/src/main/resources', environment, 'application.yaml'), 'utf8');
-  assert.ok(baseConfig.includes('${MYSQL_DATABASE:admin}'));
+  assert.ok(baseConfig.includes('${POSTGRES_DATABASE:admin}'));
   assert.ok(baseConfig.includes('sm2-private-key: ${API_ENCRYPT_PRIVATE_KEY}'), environment + ' SM2 private key must come from environment');
   assert.match(applicationConfig, /name: admin/);
 }
@@ -90,7 +90,7 @@ for (const filename of files.filter(filename => filename.endsWith('.xml'))) {
 assert.ok(fs.existsSync(path.join(web, 'src/theme/admin.less')));
 assert.ok(fs.readFileSync(path.join(web, 'src/theme/index.less'), 'utf8').includes("'./admin.less'"));
 assert.ok(fs.readFileSync(path.join(web, 'src/config/app-config.ts'), 'utf8').includes("websiteName: 'admin'"));
-assert.equal(fs.readFileSync(path.join(root, 'mysql/admin.sql'), 'utf8').match(/^CREATE TABLE /gm).length, 22);
+assert.equal(fs.readFileSync(path.join(root, 'sql/postgresql.sql'), 'utf8').match(/^CREATE TABLE /gm).length, 22);
 assert.ok(fs.statSync(path.join(api, 'base/src/main/resources/ip2region.xdb')).size > 0);
 process.stdout.write('admin identity, Java packages, mapper references and configuration checks passed.\n');
 const vm = require('node:vm');
