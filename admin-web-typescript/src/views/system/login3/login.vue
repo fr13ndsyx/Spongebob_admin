@@ -6,8 +6,8 @@
           <AnimatedCharacters :is-typing="isTyping" :has-secret="loginForm.password.length > 0" :secret-visible="showPassword" />
         </div>
         <div class="character-caption">
-          <h2>一起开始今天的工作。</h2>
-          <p>你的工作台，准备就绪。</p>
+          <h2>嗨，海绵宝宝，我们去抓水母吧。</h2>
+          <p>对不起，今天不行，我要上班。</p>
         </div>
       </section>
 
