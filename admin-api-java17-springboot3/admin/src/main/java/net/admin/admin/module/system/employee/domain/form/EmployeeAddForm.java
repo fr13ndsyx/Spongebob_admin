@@ -42,9 +42,8 @@ public class EmployeeAddForm {
     @Pattern(regexp = VerificationUtil.PHONE_REGEXP, message = "手机号格式不正确")
     private String phone;
 
-    @Schema(description = "邮箱账号")
-    @NotNull(message = "邮箱账号不能为空")
-    @Pattern(regexp = VerificationUtil.EMAIL, message = "邮箱账号格式不正确")
+    @Schema(description = "邮箱账号（选填）")
+    @Pattern(regexp = "^$|" + VerificationUtil.EMAIL, message = "邮箱账号格式不正确")
     private String email;
 
     @Schema(description = "角色列表")

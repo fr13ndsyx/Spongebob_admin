@@ -215,9 +215,11 @@ public class EmployeeService {
             return ResponseDTO.userErrorParam("手机号已存在");
         }
 
-        existEntity = employeeDao.getByEmail(email, null);
-        if (null != existEntity && !Objects.equals(existEntity.getEmployeeId(), employeeId)) {
-            return ResponseDTO.userErrorParam("邮箱账号已存在");
+        if (email != null && !email.isBlank()) {
+            existEntity = employeeDao.getByEmail(email, null);
+            if (null != existEntity && !Objects.equals(existEntity.getEmployeeId(), employeeId)) {
+                return ResponseDTO.userErrorParam("邮箱账号已存在");
+            }
         }
 
         return ResponseDTO.ok();

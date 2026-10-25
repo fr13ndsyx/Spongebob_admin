@@ -31,7 +31,7 @@
               <a-input class="form-item" v-model:value.trim="form.phone" placeholder="请输入手机号码" />
             </a-form-item>
             <a-form-item label="邮箱" name="email">
-              <a-input v-model:value.trim="form.email" placeholder="请输入邮箱" />
+              <a-input v-model:value.trim="form.email" placeholder="选填，请输入邮箱" />
             </a-form-item>
             <a-form-item label="备注" name="remark">
               <a-textarea class="form-item" v-model:value="form.remark" placeholder="请输入备注" :rows="4" />
@@ -122,7 +122,7 @@
       { pattern: regular.phone, message: '请输入正确的手机号码', trigger: 'blur' },
     ],
     gender: [{ required: true, message: '性别不能为空' }],
-    email: [{ required: true, message: '请输入邮箱' }],
+    email: [{ type: 'email', message: '请输入正确的邮箱地址', trigger: 'blur' }],
   };
   // 头像地址
   let avatarUrl = ref(defaultAvatar);
