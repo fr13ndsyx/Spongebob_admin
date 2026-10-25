@@ -2,12 +2,66 @@
   <main class="login-page">
     <div class="login-shell">
       <section class="character-panel" aria-label="欢迎登录">
+        <div class="jellies" aria-hidden="true">
+          <div v-for="index in 6" :key="index" class="jelly" :class="'jelly-' + index">
+            <svg class="jelly-shape" viewBox="0 0 120 168" fill="none" focusable="false">
+              <defs>
+                <radialGradient :id="jellyId + '-cap-' + index" cx=".32" cy=".22" r=".85">
+                  <stop stop-color="#fff3fa" stop-opacity=".96" />
+                  <stop offset=".5" stop-color="#f6c4e0" stop-opacity=".88" />
+                  <stop offset="1" stop-color="#df91bd" stop-opacity=".92" />
+                </radialGradient>
+                <linearGradient :id="jellyId + '-ribbon-' + index" x1="0" y1="0" x2="0" y2="1">
+                  <stop stop-color="#d98bb8" />
+                  <stop offset="1" stop-color="#e9b7d5" stop-opacity=".45" />
+                </linearGradient>
+              </defs>
+              <g class="jelly-tentacles" stroke-linecap="round">
+                <g stroke="#ce8bb4" stroke-width="2" opacity=".7">
+                  <path class="jelly-tendril" d="M29 64 C21 84 37 94 26 112 S22 140 27 145" />
+                  <path class="jelly-tendril jelly-tendril-late" d="M91 64 C100 85 83 98 94 116 S99 137 93 144" />
+                </g>
+                <g :stroke="'url(#' + jellyId + '-ribbon-' + index + ')'" stroke-width="5">
+                  <path class="jelly-tendril" d="M42 66 C30 88 53 97 39 121 S43 147 37 154" />
+                  <path class="jelly-tendril jelly-tendril-late" d="M60 68 C73 91 48 105 61 127 S67 150 60 158" />
+                  <path class="jelly-tendril" d="M79 66 C91 87 68 100 81 120 S77 143 83 150" />
+                </g>
+              </g>
+              <g class="jelly-bell">
+                <path d="M20 60 C25 48 95 48 100 60 L102 69 C98 77 90 72 86 74 C81 82 74 76 69 77 C63 84 56 79 51 77 C44 81 38 76 34 74 C26 78 18 72 18 67Z" fill="#e9acd0" stroke="#bb7c9e" stroke-width="1.6" />
+                <ellipse cx="60" cy="64" rx="37" ry="8" fill="#c983af" opacity=".35" />
+                <path d="M18 61 C18 34 35 15 58 14 C82 12 102 32 102 60 C102 67 94 68 88 65 C82 73 73 68 68 67 C62 74 54 70 49 67 C41 72 33 68 29 64 C23 67 18 66 18 61Z" :fill="'url(#' + jellyId + '-cap-' + index + ')'" stroke="#bb7c9e" stroke-width="1.8" stroke-linejoin="round" />
+                <path d="M28 42 C31 30 41 23 52 22" stroke="#fff9fd" stroke-width="4.5" stroke-linecap="round" opacity=".85" />
+                <ellipse cx="66" cy="23" rx="5" ry="3" fill="#fff9fd" opacity=".7" transform="rotate(12 66 23)" />
+                <g fill="#c67ba8" opacity=".52">
+                  <ellipse cx="46" cy="34" rx="4.5" ry="3" transform="rotate(-20 46 34)" />
+                  <ellipse cx="77" cy="32" rx="5" ry="3.5" transform="rotate(25 77 32)" />
+                  <circle cx="87" cy="43" r="2.5" />
+                  <circle cx="58" cy="28" r="2" />
+                </g>
+                <g fill="#885b78">
+                  <ellipse cx="46" cy="51" rx="2.4" ry="3.5" />
+                  <ellipse cx="74" cy="51" rx="2.4" ry="3.5" />
+                </g>
+                <g fill="#fff7fc">
+                  <circle cx="45.3" cy="49.8" r=".8" />
+                  <circle cx="73.3" cy="49.8" r=".8" />
+                </g>
+                <g fill="#df8eb7" opacity=".55">
+                  <ellipse cx="37" cy="57" rx="5" ry="2.5" />
+                  <ellipse cx="83" cy="57" rx="5" ry="2.5" />
+                </g>
+                <path d="M55 57 Q60 62 65 57" stroke="#a5658b" stroke-width="1.6" stroke-linecap="round" />
+              </g>
+            </svg>
+          </div>
+        </div>
         <div class="character-scene">
           <AnimatedCharacters :is-typing="isTyping" :has-secret="loginForm.password.length > 0" :secret-visible="showPassword" />
         </div>
         <div class="character-caption">
           <h2>嗨，海绵宝宝，我们去抓水母吧。</h2>
-          <p>对不起，今天不行，我要上班。</p>
+          <p>派大星，今天不行，我要上班。</p>
         </div>
       </section>
 
@@ -72,7 +126,7 @@
   import { message } from 'ant-design-vue';
   import type { FormInstance } from 'ant-design-vue';
   import { EyeInvisibleOutlined, EyeOutlined } from '@ant-design/icons-vue';
-  import { onMounted, onUnmounted, reactive, ref } from 'vue';
+  import { onMounted, onUnmounted, reactive, ref, useId } from 'vue';
   import { useRouter } from 'vue-router';
   import AnimatedCharacters from './AnimatedCharacters.vue';
   import { loginApi } from '/@/api/system/login-api';
@@ -86,6 +140,7 @@
   import LocalStorageKeyConst from '/@/constants/local-storage-key-const';
   import { useDictStore } from '/@/store/modules/system/dict';
   import { dictApi } from '/@/api/support/dict-api';
+  const jellyId = useId();
 
   const SECOND_MS = 1000;
   const CAPTCHA_REFRESH_BUFFER_SECONDS = 5;
@@ -257,14 +312,178 @@
   }
 
   .character-panel {
+    position: relative;
     display: flex;
     flex-direction: column;
     min-width: 0;
     padding: 36px 36px 44px;
     background: #edf0f4;
+    overflow: hidden;
+  }
+
+  .jellies {
+    position: absolute;
+    inset: 0 0 136px;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+    mask-image: linear-gradient(transparent, #000 10%, #000 85%, transparent);
+  }
+
+  .jelly {
+    --jelly-opacity: .8;
+    --jelly-sway-duration: 4s;
+    position: absolute;
+    top: 100%;
+    opacity: 0;
+    animation: jelly-swim 24s linear infinite;
+  }
+
+  .jelly-shape {
+    display: block;
+    width: 100%;
+    height: auto;
+    overflow: visible;
+    animation: jelly-sway var(--jelly-sway-duration) ease-in-out infinite;
+  }
+
+  .jelly-bell {
+    transform-origin: 60px 66px;
+    animation: jelly-pulse var(--jelly-sway-duration) ease-in-out infinite;
+  }
+
+  .jelly-tendril {
+    transform-origin: 60px 66px;
+    animation: jelly-tendril 3.6s ease-in-out infinite;
+  }
+
+  .jelly-tendril-late {
+    animation-delay: -1.8s;
+    animation-duration: 4.2s;
+  }
+
+  .jelly-1 {
+    width: 112px;
+    left: 78%;
+    animation-duration: 24s;
+    animation-delay: -8s;
+  }
+
+  .jelly-2 {
+    --jelly-sway-duration: 4.6s;
+    width: 84px;
+    left: 3%;
+    animation-duration: 28s;
+    animation-delay: -16s;
+  }
+
+  .jelly-3 {
+    --jelly-opacity: .55;
+    width: 60px;
+    left: 65%;
+    animation-duration: 32s;
+    animation-delay: -26s;
+  }
+
+  .jelly-4 {
+    --jelly-sway-duration: 3.8s;
+    width: 76px;
+    left: 12%;
+    animation-duration: 26s;
+    animation-delay: -4s;
+  }
+
+  .jelly-5 {
+    --jelly-opacity: .5;
+    width: 52px;
+    left: 45%;
+    animation-duration: 30s;
+    animation-delay: -21s;
+  }
+
+  .jelly-6 {
+    --jelly-opacity: .65;
+    --jelly-sway-duration: 4.8s;
+    width: 66px;
+    left: 31%;
+    animation-duration: 34s;
+    animation-delay: -14s;
+  }
+
+  .jelly-3 .jelly-shape,
+  .jelly-6 .jelly-shape {
+    filter: hue-rotate(16deg);
+  }
+
+  @keyframes jelly-swim {
+    0% {
+      transform: translate(0, 0);
+      opacity: 0;
+    }
+    12%, 78% {
+      opacity: var(--jelly-opacity);
+    }
+    100% {
+      transform: translate(-14px, -720px);
+      opacity: 0;
+    }
+  }
+
+  @keyframes jelly-sway {
+    0%, 100% {
+      transform: translateX(-5px) rotate(-5deg);
+    }
+    50% {
+      transform: translateX(5px) rotate(5deg);
+    }
+  }
+
+  @keyframes jelly-pulse {
+    0%, 100% {
+      transform: scale(1, 1);
+    }
+    45% {
+      transform: scale(1.035, .94);
+    }
+  }
+
+  @keyframes jelly-tendril {
+    0%, 100% {
+      transform: skewX(-5deg);
+    }
+    50% {
+      transform: skewX(6deg);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .jelly {
+      top: 24%;
+      opacity: var(--jelly-opacity);
+      animation: none;
+    }
+
+    .jelly-shape,
+    .jelly-bell,
+    .jelly-tendril {
+      animation: none;
+    }
+
+    .jelly-2 {
+      top: 8%;
+    }
+
+    .jelly-3,
+    .jelly-4,
+    .jelly-5,
+    .jelly-6 {
+      display: none;
+    }
   }
 
   .character-scene {
+    position: relative;
+    z-index: 1;
     display: flex;
     align-items: flex-end;
     flex: 1;
@@ -273,6 +492,8 @@
   }
 
   .character-caption {
+    position: relative;
+    z-index: 1;
     margin-top: 28px;
   }
 

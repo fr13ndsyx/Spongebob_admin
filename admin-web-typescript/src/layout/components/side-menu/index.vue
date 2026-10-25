@@ -3,11 +3,12 @@
 
   <!-- 1、顶部logo区域 -->
   <div class="logo" @click="onGoHome" :style="sideMenuWidth" v-if="!collapsed">
+    <img class="logo-avatar" :src="defaultAvatar" alt="" />
     <div class="title logo title-light" v-if="sideMenuTheme === 'light'">{{ websiteName }}</div>
     <div class="title logo title-dark" v-if="sideMenuTheme === 'dark'">{{ websiteName }}</div>
   </div>
   <div class="min-logo" @click="onGoHome" v-if="collapsed">
-    <HomeOutlined class="home-icon" aria-label="首页" />
+    <img class="logo-avatar" :src="defaultAvatar" alt="首页" />
   </div>
 
   <!-- 2、下方菜单区域： 这里使用一个递归菜单解决 -->
@@ -22,6 +23,7 @@
   import RecursionMenu from './recursion-menu.vue';
   import { HOME_PAGE_NAME } from '/@/constants/system/home-const';
   import { useAppConfigStore } from '/@/store/modules/system/app-config';
+  import { defaultAvatar } from '/@/lib/avatar';
 
   const websiteName = computed(() => useAppConfigStore().websiteName);
   const sideMenuWidth = computed(() => 'width:' + useAppConfigStore().sideMenuWidth + 'px');
@@ -63,6 +65,19 @@
 <style lang="less" scoped>
   .home-icon {
     font-size: 24px;
+  }
+
+  .logo-avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    margin-right: 10px;
+    flex: none;
+    object-fit: cover;
+  }
+
+  .min-logo .logo-avatar {
+    margin-right: 0;
   }
 
   .shadow {
