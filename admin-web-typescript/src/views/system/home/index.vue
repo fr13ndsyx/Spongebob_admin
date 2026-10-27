@@ -7,17 +7,7 @@
         <p v-if="loginRegion" class="login-info"><EnvironmentOutlined /> 地区：{{ loginRegion }}</p>
         <p class="heart-sentence"><SmileOutlined /> {{ heartSentence }}</p>
       </div>
-      <div class="weather">
-        <iframe
-          title="当地天气"
-          tabindex="-1"
-          width="100%"
-          height="70"
-          scrolling="no"
-          src="https://i.tianqi.com/index.php?c=code&id=12&icon=1&num=3&site=12"
-        ></iframe>
-        <a-button class="feedback-button" type="link" @click="feedbackModal?.show()"><MessageOutlined /> 意见反馈</a-button>
-      </div>
+      <a-button class="feedback-button" type="link" @click="feedbackModal?.show()"><MessageOutlined /> 意见反馈</a-button>
     </div>
   </a-card>
   <FeedbackModal ref="feedbackModal" />
@@ -114,9 +104,7 @@
   p { margin: 0; color: #666; }
   .login-info { margin-top: 8px; font-size: 13px; overflow-wrap: anywhere; }
   .heart-sentence { margin-top: 14px; line-height: 1.8; }
-  .weather { width: 400px; flex-shrink: 0; }
-  .weather iframe { display: block; border: 0; pointer-events: none; }
-  .feedback-button { display: block; margin-left: auto; padding-right: 0; }
+  .feedback-button { display: block; flex-shrink: 0; align-self: flex-end; height: auto; margin-left: auto; padding: 0; border: 0; line-height: 1.8; }
   .version-button { height: auto; padding: 0; font-weight: 600; }
   .publish-date { margin-left: 16px; color: #999; font-size: 13px; }
   .change-log-preview {

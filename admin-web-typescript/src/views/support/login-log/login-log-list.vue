@@ -47,6 +47,7 @@
       :scroll="{ y: scrollY }"
     >
       <template #bodyCell="{ text, record, column }">
+        <template v-if="column.dataIndex === 'loginIpRegion'">{{ formatIpRegion(text) }}</template>
         <template v-if="column.dataIndex === 'loginResult'">
           <template v-if="text === LOGIN_RESULT_ENUM.LOGIN_SUCCESS.value">
             <a-tag color="success">登录成功</a-tag>
@@ -93,6 +94,7 @@
   import { LOGIN_RESULT_ENUM } from '/@/constants/support/login-log-const';
   import { loginLogApi } from '/@/api/support/login-log-api';
   import { sentry } from '/@/lib/sentry';
+  import { formatIpRegion } from '/@/lib/ip-region';
   import TableOperator from '/@/components/support/table-operator/index.vue';
   import { TABLE_ID_CONST } from '/@/constants/support/table-id-const';
   import { calcTableHeight } from '/@/lib/table-auto-height';

@@ -34,6 +34,7 @@
 
   <a-table size="small" :loading="tableLoading" :dataSource="tableData" :columns="columns" bordered rowKey="operateLogId" :pagination="false">
     <template #bodyCell="{ text, record, column }">
+      <template v-if="column.dataIndex === 'ipRegion'">{{ formatIpRegion(text) }}</template>
       <template v-if="column.dataIndex === 'successFlag'">
         <a-tag :color="text ? 'success' : 'error'">{{ text ? '成功' : '失败' }}</a-tag>
       </template>
@@ -73,6 +74,7 @@
   import { defaultTimeRanges } from '/@/lib/default-time-ranges';
   import uaparser from 'ua-parser-js';
   import { sentry } from '/@/lib/sentry';
+  import { formatIpRegion } from '/@/lib/ip-region';
 
   const columns = ref([
     {

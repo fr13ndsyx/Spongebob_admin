@@ -168,10 +168,6 @@ async function main() {
   homeUser.lastLoginIpRegion = '未知|0|0|0|未知';
   assert.equal(home.setup.loginRegion.value, '');
   assert.match(home.descriptor.template.content, /v-if="loginRegion"/);
-  assert.doesNotMatch(home.descriptor.template.content, /查看天气|href=/);
-  assert.match(home.descriptor.template.content, /tabindex="-1"/);
-  assert.match(home.descriptor.styles[0].content, /pointer-events: none/);
-  assert.match(home.descriptor.template.content, /title="当地天气"/);
   assert.match(home.descriptor.template.content, /<HomeHelpDoc/);
   assert.match(home.descriptor.template.content, /feedbackModal\?\.show\(\)/);
   assert.match(home.descriptor.template.content, /v-if="loadFailed \|\| changeLogs\.length"/);
@@ -252,6 +248,6 @@ async function main() {
   assert.doesNotMatch(characters.styles[0].content, /@media[^{]*(?:min|max)-width/);
   assert.match(characters.styles[0].content, /prefers-reduced-motion/);
   assert.match(fs.readFileSync(path.join(root, 'src/theme/index.less'), 'utf8'), /#app\s*\{\s*min-width: 1200px/);
-  process.stdout.write('Desktop layout, right-click tabs, geographic region, weather and existing admin checks passed.\n');
+  process.stdout.write('Desktop layout, right-click tabs, geographic region and existing admin checks passed.\n');
 }
 main().catch(error => { process.stderr.write(error.stack + '\n'); process.exitCode = 1; });

@@ -48,6 +48,7 @@
     </a-row>
     <a-table size="small" :loading="tableLoading" :dataSource="tableData" :columns="columns" bordered rowKey="operateLogId" :pagination="false">
       <template #bodyCell="{ text, record, column }">
+        <template v-if="column.dataIndex === 'ipRegion'">{{ formatIpRegion(text) }}</template>
         <template v-if="column.dataIndex === 'response'">
           <a-typography-text v-if="text && text.ok">{{ text ? text.msg : '-' }}</a-typography-text>
           <a-typography-text v-else type="warning">{{ text ? text.msg : '-' }}</a-typography-text>
@@ -99,6 +100,7 @@
   import { defaultTimeRanges } from '/@/lib/default-time-ranges';
   import uaparser from 'ua-parser-js';
   import { sentry } from '/@/lib/sentry';
+  import { formatIpRegion } from '/@/lib/ip-region';
   import TableOperator from '/@/components/support/table-operator/index.vue';
   import { TABLE_ID_CONST } from '/@/constants/support/table-id-const';
 

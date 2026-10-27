@@ -13,7 +13,7 @@
           </a-row>
           <a-row class="detail-info">
             <a-col :span="12"> 请求IP： {{ detail.ip }}</a-col>
-            <a-col :span="12"> IP地区： {{ detail.ipRegion }}</a-col>
+            <a-col :span="12"> IP地区： {{ formatIpRegion(detail.ipRegion) }}</a-col>
           </a-row>
           <a-row class="detail-info">
             <a-col :span="12"> 客户端： {{ detail.os }} / {{ detail.browser }}  {{ detail.device ? '/' + detail.device : detail.device }}</a-col>
@@ -55,6 +55,7 @@
   import { JsonViewer } from 'vue3-json-viewer';
   import { operateLogApi } from '/@/api/support/operate-log-api';
   import { sentry } from '/@/lib/sentry';
+  import { formatIpRegion } from '/@/lib/ip-region';
   import { Loading } from '/@/components/framework/loading';
   import uaparser from 'ua-parser-js';
 
